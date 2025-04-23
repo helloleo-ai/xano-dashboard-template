@@ -1,79 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProtectedData, logout, checkAuth } from '../services/xano'; // Assuming you have a checkAuth function
+import { logout, checkAuth } from '../services/xano';
+import DashboardCard from '../components/DashboardCard';
+import SimpleBarChart from '../components/SimpleBarChart';
+import ActivityFeed from '../components/ActivityFeed';
+import { statsData, chartData, activityFeedData } from '../data/dashboardData';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState<any>(null); // State to hold data fetched from Xano
+  // Keep loading state for auth check, remove data/error states for Xano fetch
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is authenticated on component mount
     if (!checkAuth()) {
       navigate('/login'); // Redirect to login if not authenticated
-      return; // Stop execution if not authenticated
+    } else {
+      // If authenticated, stop loading
+      setLoading(false);
     }
-
-    // Fetch protected data from Xano
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await getProtectedData(); // Use your Xano service function
-        setData(result);
-      } catch (err) {
-        setError('Failed to fetch data. You might be logged out.');
-        console.error(err);
-        // Optional: Redirect to login if fetch fails due to auth error
-        if (err.message.includes('No authentication token') || (err.response && err.response.status === 401)) {
-            navigate('/login');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [navigate]); // Rerun effect if navigate function changes (though unlikely)
+    // No need to fetch data here for the dashboard layout example
+  }, [navigate]);
 
   const handleLogout = () => {
     logout(); // Clear auth token using Xano service
     navigate('/login'); // Redirect to login page
   };
 
-  // Display loading state
+  // Display loading state (only for auth check now)
   if (loading) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-            <div className="text-xl font-semibold">Loading your dashboard...</div>
-            {/* You can add a spinner here */}
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <div className="text-xl font-semibold text-gray-700">Checking authentication...</div>
+        {/* You could add a spinner here */}
+      </div>
     );
   }
 
-  // Display error state
-  if (error) {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-red-50 p-4">
-            <div className="text-xl font-semibold text-red-700">Error</div>
-            <p className="text-red-600">{error}</p>
-            <button
-                onClick={() => navigate('/login')} // Go back to login on error
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-                Go to Login
-            </button>
-        </div>
-    );
-  }
-
-  // Display main content
+  // Display main content (Dashboard)
   return (
-    <div className="flex flex-col min-h-screen">
-        {/* Header */}
-        <header className="bg-white shadow-md p-4 flex justify-between items-center">
-            <h1 className="text-xl font-bold text-gray-800">Main Dashboard</h1>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
+        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
             <button
             onClick={handleLogout}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
@@ -82,26 +51,37 @@ const MainPage: React.FC = () => {
             </button>
         </header>
 
-        {/* Main Content Area */}
-        <main className="flex-grow p-6 bg-gray-100">
-            <h2 className="text-2xl font-semibold mb-4">Welcome!</h2>
-            <p className="mb-6">This is your main application page after logging in.</p>
+      {/* Main Content Area */}
+      <main className="flex-grow p-6">
+        {/* Stats Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {statsData.map((stat) => (
+            <DashboardCard
+              key={stat.title}
+              title={stat.title}
+              value={stat.value}
+              change={stat.change}
+              changeType={stat.changeType as 'positive' | 'negative' | 'neutral'}
+            />
+          ))}
+        </div>
 
-            {/* Display fetched data */}
-            <div className="bg-white p-4 rounded shadow">
-                <h3 className="text-lg font-medium mb-2">Data from Xano:</h3>
-                {data ? (
-                    <pre className="bg-gray-50 p-3 rounded overflow-x-auto text-sm">
-                        {JSON.stringify(data, null, 2)}
-                    </pre>
-                ) : (
-                    <p>No data loaded yet.</p>
-                )}
-            </div>
-        </main>
+        {/* Chart and Activity Feed Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Bar Chart taking 2 columns */}
+          <div className="lg:col-span-2">
+            <SimpleBarChart data={chartData} />
+          </div>
 
-        {/* Footer */}
-        <footer className="bg-gray-800 text-white text-center p-4">
+          {/* Activity Feed taking 1 column */}
+          <div className="lg:col-span-1">
+            <ActivityFeed items={activityFeedData} />
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white text-gray-600 text-center p-4 mt-auto border-t border-gray-200">
             © 2025 Your Company
         </footer>
     </div>
