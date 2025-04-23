@@ -75,7 +75,7 @@ const MainPage: React.FC = () => {
 
           {/* Activity Feed taking 1 column */}
           <div className="lg:col-span-1">
-            <ActivityFeed items={activityFeedData} />
+            <ActivityFeed data={activityFeedData} /> {/* Changed prop name from items to data */}
           </div>
         </div>
       </main>
