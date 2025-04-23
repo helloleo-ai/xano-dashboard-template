@@ -5,12 +5,24 @@ import DashboardCard from 'components/DashboardCard'; // Use absolute path from 
 import SimpleBarChart from 'components/SimpleBarChart'; // Use absolute path from src
 import ActivityFeed from 'components/ActivityFeed';
 import { statsData, chartData, activityFeedData } from 'data/dashboardData';
-import Sidebar from 'components/Sidebar'; // Import the Sidebar component
+import Sidebar from 'components/Sidebar';
+
+// Placeholder Hamburger Icon
+const MenuIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+  </svg>
+);
+
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
-  // Keep loading state for auth check, remove data/error states for Xano fetch
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar visibility
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   useEffect(() => {
     // Check if user is authenticated on component mount
@@ -40,18 +52,36 @@ const MainPage: React.FC = () => {
 
   // Display main content (Dashboard) with Sidebar
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 relative"> {/* Added relative for overlay positioning */}
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
-      {/* Main Content Area (takes remaining width) */}
-      <div className="flex-1 flex flex-col ml-64"> {/* Add margin-left to avoid overlap */}
+      {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden" // Only show overlay on smaller screens
+          onClick={toggleSidebar} // Close sidebar on overlay click
+        ></div>
+      )}
+
+      {/* Main Content Area */}
+      {/* Adjust margin-left based on screen size: 0 on small screens, ml-64 on large screens */}
+      <div className="flex-1 flex flex-col lg:ml-64">
         {/* Header */}
         <header className="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
-          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+          {/* Hamburger Menu Button - visible only below lg */}
+          <button
+            onClick={toggleSidebar}
+            className="text-gray-600 p-2 rounded hover:bg-gray-200 lg:hidden" // Hide on large screens
+            aria-label="Open sidebar"
+          >
+            <MenuIcon />
+          </button>
+          {/* Ensure title doesn't overlap button on small screens */}
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 ml-2 lg:ml-0">Dashboard</h1>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm sm:text-base" // Adjusted padding/text size
             >
             Logout
           </button>
