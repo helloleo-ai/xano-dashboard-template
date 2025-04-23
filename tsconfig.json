@@ -18,7 +18,17 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Path Aliases */
+    "baseUrl": ".", // Set the base directory for path resolution
+    "paths": {
+      "components/*": ["src/components/*"],
+      "pages/*": ["src/pages/*"],
+      "services/*": ["src/services/*"],
+      "data/*": ["src/data/*"]
+      // Add other top-level directories in src if needed
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
