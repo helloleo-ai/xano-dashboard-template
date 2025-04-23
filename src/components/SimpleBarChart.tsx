@@ -14,7 +14,7 @@ interface SimpleBarChartProps {
 
 const SimpleBarChart: React.FC<SimpleBarChartProps> = ({ data }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md h-96"> {/* Added height */}
+    <div className="bg-white p-6 rounded-lg shadow-md h-[26rem]"> {/* Increased height from h-96 */}
       <h3 className="text-lg font-medium text-gray-700 mb-4">Monthly Activity</h3>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
