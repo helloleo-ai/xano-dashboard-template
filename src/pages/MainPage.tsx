@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout, checkAuth } from '../services/xano';
-import DashboardCard from '../components/DashboardCard';
-import SimpleBarChart from '../components/SimpleBarChart';
-import ActivityFeed from '../components/ActivityFeed';
-import { statsData, chartData, activityFeedData } from '../data/dashboardData';
+import { logout, checkAuth } from 'services/xano'; // Use absolute path from src
+import DashboardCard from 'components/DashboardCard'; // Use absolute path from src
+import SimpleBarChart from 'components/SimpleBarChart'; // Use absolute path from src
+import ActivityFeed from 'components/ActivityFeed'; // Use absolute path from src
+import { statsData, chartData, activityFeedData } from 'data/dashboardData'; // Use absolute path from src
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
