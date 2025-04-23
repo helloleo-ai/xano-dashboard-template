@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { logout, checkAuth } from 'services/xano'; // Use absolute path from src
 import DashboardCard from 'components/DashboardCard'; // Use absolute path from src
 import SimpleBarChart from 'components/SimpleBarChart'; // Use absolute path from src
-import ActivityFeed from 'components/ActivityFeed'; // Use absolute path from src
-import { statsData, chartData, activityFeedData } from 'data/dashboardData'; // Use absolute path from src
+import ActivityFeed from 'components/ActivityFeed';
+import { statsData, chartData, activityFeedData } from 'data/dashboardData';
+import Sidebar from 'components/Sidebar'; // Import the Sidebar component
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
@@ -37,25 +38,30 @@ const MainPage: React.FC = () => {
     );
   }
 
-  // Display main content (Dashboard)
+  // Display main content (Dashboard) with Sidebar
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-            <button
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main Content Area (takes remaining width) */}
+      <div className="flex-1 flex flex-col ml-64"> {/* Add margin-left to avoid overlap */}
+        {/* Header */}
+        <header className="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
+          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+          <button
             onClick={handleLogout}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
             >
             Logout
-            </button>
+          </button>
         </header>
 
-      {/* Main Content Area */}
-      <main className="flex-grow p-6">
-        {/* Stats Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {statsData.map((stat) => (
+        {/* Page Content */}
+        <main className="flex-grow p-6">
+          {/* Stats Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6"> {/* Adjusted grid for potentially smaller space */}
+            {statsData.map((stat) => (
             <DashboardCard
               key={stat.title}
               title={stat.title}
@@ -84,6 +90,7 @@ const MainPage: React.FC = () => {
       <footer className="bg-white text-gray-600 text-center p-4 mt-auto border-t border-gray-200">
             © 2025 Your Company
         </footer>
+      </div> {/* End Main Content Area */}
     </div>
   );
 };
